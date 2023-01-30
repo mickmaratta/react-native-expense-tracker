@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
+import ExpensesOutput from '../components/ExpensesOutput/ExpensesOutput'
 
 const AllExpensesScreen = () => {
   return (
-    <View>
-      <Text>AllExpensesScreen</Text>
-    </View>
+    <ExpensesOutput expensePeriod="Total" />
   )
 }
 
