@@ -9,22 +9,30 @@ import { useNavigation } from "@react-navigation/native";
 import AllExpensesScreen from "./screens/AllExpensesScreen";
 import RecentExpensesScreen from "./screens/RecentExpensesScreen";
 import ManageExpenseScreen from "./screens/ManageExpenseScreen";
-import IconButton from "./components/IconButton";
+import IconButton from "./components/UI/IconButton";
 import { GlobalStyles } from "./constants/styles";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
-  const navigation = useNavigation();
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ navigation }) => ({
         headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
         headerTintColor: GlobalStyles.colors.neutral100,
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
-        tabBarActiveTintColor: GlobalStyles.colors.secondary500
-      }}
+        tabBarActiveTintColor: GlobalStyles.colors.secondary500,
+        headerRight: () => {
+          return (
+            <IconButton
+              icon={"add"}
+              color={GlobalStyles.colors.neutral100}
+              onPress={() => navigation.navigate("ManageExpense")}
+            />
+          );
+        },
+      })}
     >
       <Tab.Screen
         name="RecentExpenses"
@@ -35,15 +43,6 @@ function TabNavigator() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="hourglass-outline" color={color} size={size} />
           ),
-          headerRight: () => {
-            return (
-              <IconButton
-                icon={"add"}
-                color={GlobalStyles.colors.neutral100}
-                onPress={() => navigation.navigate("ManageExpense")}
-              />
-            );
-          },
         }}
       />
       <Tab.Screen
