@@ -3,6 +3,7 @@ import React from "react";
 import ExpensesSummary from "./ExpensesSummary";
 import ExpensesList from "./ExpensesList";
 import { GlobalStyles } from "../../constants/styles";
+import { useSelector } from "react-redux";
 
 const DUMMY_EXPENSES = [
     {
@@ -37,10 +38,12 @@ const DUMMY_EXPENSES = [
     },
 ]
 const ExpensesOutput = ({ expenses, expensePeriod }) => {
+  
+
   return (
     <View style={styles.container}>
-      <ExpensesSummary expensePeriod={expensePeriod} expenses={DUMMY_EXPENSES} />
-      <ExpensesList expenses={DUMMY_EXPENSES} />
+      <ExpensesSummary expensePeriod={expensePeriod} expenses={expenses} />
+      <ExpensesList expenses={expenses} />
     </View>
   );
 };

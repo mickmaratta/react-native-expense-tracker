@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 import AllExpensesScreen from "./screens/AllExpensesScreen";
 import RecentExpensesScreen from "./screens/RecentExpensesScreen";
@@ -62,21 +63,28 @@ function TabNavigator() {
 export default function App() {
   return (
     <>
-      <StatusBar style="light"/>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Tabs"
-            component={TabNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ManageExpense"
-            component={ManageExpenseScreen}
-            options={{ presentation: "modal" }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <StatusBar style="light" />
+      <Provider store={store}>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+              headerTintColor: GlobalStyles.colors.neutral100,
+            }}
+          >
+            <Stack.Screen
+              name="Tabs"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ManageExpense"
+              component={ManageExpenseScreen}
+              options={{ presentation: "modal" }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     </>
   );
 }
