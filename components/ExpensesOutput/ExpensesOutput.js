@@ -1,49 +1,19 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import ExpensesSummary from "./ExpensesSummary";
 import ExpensesList from "./ExpensesList";
 import { GlobalStyles } from "../../constants/styles";
-import { useSelector } from "react-redux";
 
-const DUMMY_EXPENSES = [
-    {
-        id: 'e1',
-        description: 'A pair of shoes',
-        amount: 59.99,
-        date: new Date('2023-1-14'),
-    },
-    {
-        id: 'e2',
-        description: 'Pants',
-        amount: 79.99,
-        date: new Date('2023-1-4'),
-    },
-    {
-        id: 'e3',
-        description: 'Groceries',
-        amount: 30.74,
-        date: new Date('2023-1-29'),
-    },
-    {
-        id: 'e4',
-        description: 'Book',
-        amount: 20.25,
-        date: new Date('2022-12-29'),
-    },
-    {
-        id: 'e5',
-        description: 'Movie',
-        amount: 24.95,
-        date: new Date('2022-1-7'),
-    },
-]
-const ExpensesOutput = ({ expenses, expensePeriod }) => {
+const ExpensesOutput = ({ expenses, expensePeriod, fallbackText }) => {
   
-
+  let content = <Text style={styles.fallbackText}>{fallbackText}</Text>
+  if (expenses.length > 0) {
+      content = <ExpensesList expenses={expenses} />
+  }
   return (
     <View style={styles.container}>
       <ExpensesSummary expensePeriod={expensePeriod} expenses={expenses} />
-      <ExpensesList expenses={expenses} />
+      {content}
     </View>
   );
 };
@@ -56,5 +26,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 0,
+  },
+  fallbackText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 32,
+    fontStyle: "italic",
+    color: GlobalStyles.colors.primary300,
   }
 });

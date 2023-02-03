@@ -4,7 +4,11 @@ import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
 import Button from "../components/UI/Button";
 import { useDispatch } from "react-redux";
-import { deleteExpense } from "../redux/expensesSlice";
+import {
+  addExpense,
+  deleteExpense,
+  updateExpense,
+} from "../redux/expensesSlice";
 
 const ManageExpenseScreen = ({ route, navigation }) => {
   const editedExpenseId = route.params?.expenseId;
@@ -18,24 +22,43 @@ const ManageExpenseScreen = ({ route, navigation }) => {
   }, [navigation, isEditing]);
 
   function deleteExpenseHandler() {
+    dispatch(deleteExpense(editedExpenseId));
     navigation.goBack();
-    dispatch(deleteExpense({id: editedExpenseId}))
-
-  };
+  }
 
   function cancelHandler() {
     navigation.goBack();
-  };
+  }
 
   function confirmHandler() {
+    if (isEditing) {
+      dispatch(updateExpense({
+        id: editedExpenseId,
+        description: "Test Update",
+        amount: 19.99,
+        date: new Date("2022-12-25").getTime(),
+      }));
+    } else {
+      dispatch(
+        addExpense({
+          description: "Test",
+          amount: 19.99,
+          date: new Date("2022-12-25").getTime(),
+        })
+      );
+    }
     navigation.goBack();
-  };
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonsContainer}>
-        <Button style={styles.button} mode="flat" onPress={cancelHandler}>Cancel</Button>
-        <Button style={styles.button}  onPress={confirmHandler}>{isEditing ? 'Update' : 'Add'}</Button>
+        <Button style={styles.button} mode="flat" onPress={cancelHandler}>
+          Cancel
+        </Button>
+        <Button style={styles.button} onPress={confirmHandler}>
+          {isEditing ? "Update" : "Add"}
+        </Button>
       </View>
       {isEditing && (
         <View style={styles.deleteContainer}>

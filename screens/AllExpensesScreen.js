@@ -6,7 +6,7 @@ import { allExpenses } from "../redux/expensesSlice";
 
 const AllExpensesScreen = () => {
   const expenses = useSelector(allExpenses);
-  return <ExpensesOutput expensePeriod="Total" expenses={expenses} />;
+  return <ExpensesOutput expensePeriod="Total" expenses={expenses} fallbackText='Press + sign to add new expense' />;
 };
 
 export default AllExpensesScreen;
