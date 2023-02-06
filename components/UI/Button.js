@@ -19,11 +19,11 @@ export default Button
 const styles = StyleSheet.create({
     button: {
         borderRadius: 4,
-        padding: 8,
+        padding: 14,
         backgroundColor: GlobalStyles.colors.primary500
     },
     flat: {
-        backgroundColor: GlobalStyles.colors.neutral500
+        backgroundColor: GlobalStyles.colors.accent500
     },
     buttonText: {
         color: 'white',
