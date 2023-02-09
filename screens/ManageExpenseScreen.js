@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useLayoutEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
-import Button from "../components/UI/Button";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addExpense,
@@ -11,12 +10,15 @@ import {
   updateExpense,
 } from "../redux/expensesSlice";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
+import { deleteDatabaseExpense, storeExpense, updateDatabaseExpense } from "../util/http";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
 
 const ManageExpenseScreen = ({ route, navigation }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   const dispatch = useDispatch();
-
+  
   const selectedExpense = useSelector(allExpenses).find(
     (expense) => expense.id === editedExpenseId
   );
@@ -28,7 +30,9 @@ const ManageExpenseScreen = ({ route, navigation }) => {
   }, [navigation, isEditing]);
 
   function deleteExpenseHandler() {
+    setIsSubmitting(true);
     dispatch(deleteExpense(editedExpenseId));
+    deleteDatabaseExpense(editedExpenseId);
     navigation.goBack();
   }
 
@@ -36,20 +40,25 @@ const ManageExpenseScreen = ({ route, navigation }) => {
     navigation.goBack();
   }
 
-  function confirmHandler(expenseData) {
+  async function confirmHandler(expenseData) {
+    setIsSubmitting(true)
     if (isEditing) {
       dispatch(
         updateExpense({
           id: editedExpenseId,
-          description: expenseData.description,
-          amount: expenseData.amount,
-          date: expenseData.date,
+          ...expenseData,
         })
       );
+      await updateDatabaseExpense(editedExpenseId, expenseData);
     } else {
-      dispatch(addExpense(expenseData));
+      const id = await storeExpense(expenseData);
+      dispatch(addExpense({ ...expenseData, id: id }));
     }
     navigation.goBack();
+  }
+
+  if(isSubmitting) {
+    return <LoadingOverlay />
   }
 
   return (

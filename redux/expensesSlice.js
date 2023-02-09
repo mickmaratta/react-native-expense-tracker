@@ -2,46 +2,20 @@ import { createSlice } from "@reduxjs/toolkit";
 import uuid from "react-native-uuid";
 
 const initialState = {
-  expenses: [
-    {
-      id: "e1",
-      description: "A pair of shoes",
-      amount: 59.99,
-      date: new Date("2023-02-02").getTime(),
-    },
-    {
-      id: "e2",
-      description: "Pants",
-      amount: 79.99,
-      date: new Date("2022-12-29").getTime(),
-    },
-    {
-      id: "e3",
-      description: "Groceries",
-      amount: 30.74,
-      date: new Date("2022-12-29").getTime(),
-    },
-    {
-      id: "e4",
-      description: "Book",
-      amount: 20.25,
-      date: new Date("2022-12-29").getTime(),
-    },
-    {
-      id: "e5",
-      description: "Movie",
-      amount: 24.95,
-      date: new Date("2022-12-29").getTime(),
-    },
-  ],
+  expenses: [],
 };
+
 const expensesSlice = createSlice({
   name: "favorites",
   initialState,
   reducers: {
+    setExpenses: (state, action) => {
+      const invertedArray = action.payload.reverse();
+      state.expenses = invertedArray;
+    },
     addExpense: (state, action) => {
-      const id = uuid.v4();
-      state.expenses = [{ id: id, ...action.payload }, ...state.expenses];
+      //const id = uuid.v4();
+      state.expenses = [action.payload, ...state.expenses];
     },
     updateExpense: (state, action) => {
       const updatedExpenseIndex = state.expenses.findIndex(
@@ -60,5 +34,5 @@ const expensesSlice = createSlice({
 });
 
 export const allExpenses = (state) => state.expenses.expenses;
-export const { deleteExpense, addExpense, updateExpense } = expensesSlice.actions;
+export const { deleteExpense, addExpense, updateExpense, setExpenses} = expensesSlice.actions;
 export default expensesSlice.reducer;
