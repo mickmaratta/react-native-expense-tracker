@@ -6,25 +6,36 @@ import { allExpenses, setExpenses } from "../redux/expensesSlice";
 import { getDateMinusDays } from "../util/date";
 import { fetchExpenses } from "../util/http";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
+import ErrorOverlay from "../components/UI/ErrorOverlay";
 
 const RecentExpensesScreen = () => {
-  const [isFetching, setIsFetching] = useState(true)
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState();
+
   const expenses = useSelector(allExpenses);
   const dispatch = useDispatch();
 
   useEffect(() => {
     async function getExpenses() {
       setIsFetching(true);
-      const expenses = await fetchExpenses();
-      dispatch(setExpenses(expenses)); 
+      try {
+        const expenses = await fetchExpenses();
+        dispatch(setExpenses(expenses));
+      } catch (error) {
+        setError("Could not fetch expenses");
+      }
       setIsFetching(false);
     }
     getExpenses();
   }, []);
 
   if (isFetching) {
-    return <LoadingOverlay />
+    return <LoadingOverlay />;
   };
+
+  if (error && !isFetching) {
+    return <ErrorOverlay errorMessage={error} />
+  }
 
   const recentExpenses = expenses.filter((e) => {
     const today = new Date();

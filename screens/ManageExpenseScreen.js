@@ -10,15 +10,21 @@ import {
   updateExpense,
 } from "../redux/expensesSlice";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
-import { deleteDatabaseExpense, storeExpense, updateDatabaseExpense } from "../util/http";
+import {
+  deleteDatabaseExpense,
+  storeExpense,
+  updateDatabaseExpense,
+} from "../util/http";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
+import ErrorOverlay from "../components/UI/ErrorOverlay";
 
 const ManageExpenseScreen = ({ route, navigation }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState();
   const editedExpenseId = route.params?.expenseId;
   const isEditing = !!editedExpenseId;
   const dispatch = useDispatch();
-  
+
   const selectedExpense = useSelector(allExpenses).find(
     (expense) => expense.id === editedExpenseId
   );
@@ -31,9 +37,14 @@ const ManageExpenseScreen = ({ route, navigation }) => {
 
   function deleteExpenseHandler() {
     setIsSubmitting(true);
-    dispatch(deleteExpense(editedExpenseId));
-    deleteDatabaseExpense(editedExpenseId);
-    navigation.goBack();
+    try {
+      dispatch(deleteExpense(editedExpenseId));
+      deleteDatabaseExpense(editedExpenseId);
+      navigation.goBack();
+    } catch (error) {
+      setError("Could not delete expense - please try again later");
+      setIsSubmitting(false);
+    }
   }
 
   function cancelHandler() {
@@ -41,26 +52,34 @@ const ManageExpenseScreen = ({ route, navigation }) => {
   }
 
   async function confirmHandler(expenseData) {
-    setIsSubmitting(true)
-    if (isEditing) {
-      dispatch(
-        updateExpense({
-          id: editedExpenseId,
-          ...expenseData,
-        })
-      );
-      await updateDatabaseExpense(editedExpenseId, expenseData);
-    } else {
-      const id = await storeExpense(expenseData);
-      dispatch(addExpense({ ...expenseData, id: id }));
+    setIsSubmitting(true);
+    try {
+      if (isEditing) {
+        dispatch(
+          updateExpense({
+            id: editedExpenseId,
+            ...expenseData,
+          })
+        );
+        await updateDatabaseExpense(editedExpenseId, expenseData);
+      } else {
+        const id = await storeExpense(expenseData);
+        dispatch(addExpense({ ...expenseData, id: id }));
+      }
+      navigation.goBack();
+    } catch (error) {
+      setError('Could not save data - please try again later');
+      setIsSubmitting(false);
     }
-    navigation.goBack();
   }
 
-  if(isSubmitting) {
-    return <LoadingOverlay />
+  if (isSubmitting) {
+    return <LoadingOverlay />;
   }
 
+  if (error && !isSubmitting) {
+    return <ErrorOverlay errorMessage={error} />;
+  }
   return (
     <View style={styles.container}>
       <ExpenseForm
